@@ -1,9 +1,12 @@
 include("Utils.jl") 
-using .utils
+include("MyLib.jl")
 
 spa1 = "./data/spa1.mtx"
-sparse_matrix = @time utils.import_sparse_matrix(spa1)
-matrix = @time utils.import_matrix("./data/spa1.mtx")
+sparse_matrix = import_sparse_matrix(spa1)          # use @time to get statistics
+# matrix = @time utils.import_matrix("./data/spa1.mtx")
 
-println(sizeof(sparse_matrix))
-println(sizeof(matrix))
+b = get_b(sparse_matrix)
+
+# println(b)
+
+println(gauss_seidel(sparse_matrix, b))
