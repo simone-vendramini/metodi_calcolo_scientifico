@@ -30,7 +30,7 @@ function gauss_seidel(A, b, tol=1e-4, max_iter=20000)
 
     println("Gauss Seidel")
 
-    x = zeros(size(A, 1))                         # x = zeros vector
+    x = zeros(size(A, 1))                        # x = zeros vector
 
     P = tril(A)                                  # P = lower triangular matrix
     N = P - A                                    # N = negative upper triangular matrix with diagonal zero
@@ -51,13 +51,51 @@ function gauss_seidel(A, b, tol=1e-4, max_iter=20000)
 
 end
 
-function gradient()
+function gradient(A, b, tol=1e-4, max_iter=20000)
     println("Gradient")
 
+    x = zeros(size(A, 1))                         # x = zeros vector
+
+    for k = 1:max_iter
+
+        r = b - A * x                             # calculate residual
+        alpha = dot(r, r) / dot(r, A * r)         # calculate step size
+        x = x + alpha * r                         # update x
+
+        if norm(r)/norm(b) < tol                  # check convergence
+            break
+        end
+
+    end
+
+    return x
 
 end
 
-function conjugate_gradient()
+function conjugate_gradient(A, b, tol=1e-4, max_iter=20000)
     println("Conjugate Gradient")
+
+    x = zeros(size(A, 1))                         # x = zeros vector
+
+    d = b - A * x                                 # initial search direction
+
+    for k = 1:max_iter
+
+        r = b - A * x                             # calculate residual
+        alpha = dot(d, r) / dot(d, A * d)         # calculate step size for x
+        x = x + alpha * d                         # update x
+
+        r_k = b - A * x                             # update residual
+        beta = dot(d, A * r_k) / dot(d, A * d)      # calculate step size for search direction
+        d = r_k - beta * d                          # update search direction
+
+        if norm(r)/norm(b) < tol                  # check convergence
+            break
+        end
+
+    end
+
+    return x
+
 end
 
