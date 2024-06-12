@@ -13,7 +13,7 @@ function jacobi(A, b, tol=1e-4, max_iter=20000)
 
     for k = 1:max_iter
 
-        r = b -A * x                              # calculate residual
+        r = b - A * x                             # calculate residual
         x = x + P * r                             # update x
 
         if norm(r)/norm(b) < tol                  # check convergence

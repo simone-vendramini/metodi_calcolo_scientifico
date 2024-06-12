@@ -10,10 +10,11 @@ tols = [1e-4, 1e-6, 1e-8, 1e-10]
 
 
 for name in matrix_names
-    for tol in tols
 
-        matrix = import_sparse_matrix(path * name * ".mtx")
-        b = get_b(matrix)
+    matrix = import_sparse_matrix(path * name * ".mtx")
+    b = get_b(matrix)
+    
+    for tol in tols
 
         tol_str = @sprintf("%.0e", tol)
 
