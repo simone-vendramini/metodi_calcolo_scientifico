@@ -4,6 +4,7 @@ include("MyLib.jl")
 using DelimitedFiles
 using Printf
 using Statistics
+using JSON
 
 path = "./data/"
 matrix_names = ["spa1", "spa2", "vem1", "vem2"]
