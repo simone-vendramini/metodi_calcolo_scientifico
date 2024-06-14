@@ -99,3 +99,41 @@ function conjugate_gradient(A, b, tol=1e-4, max_iter=20000)
 
 end
 
+function DCT1(v)
+
+    N = length(v)
+    a = zeros(N)
+    
+    for k = 1:N
+        for i = 1:N
+            a[k] = a[k] + v[i] * cos((pi * (k - 1)) * ( 2 * (i - 1) + 1) / (2 * N))
+        end
+        if k == 1
+            a[k] = a[k] * sqrt(1 / N)
+        else
+            a[k] = a[k] * sqrt(2 / N)
+        end
+    end
+
+    return a
+
+end
+
+function DCT2(A)
+    
+    N = size(A, 1)
+    M = size(A, 2)
+
+    B = zeros(N, M)
+
+    for n = 1:N
+        B[n, :] = DCT1(A[n, :])
+    end
+
+    for m = 1:M
+        B[:, m] = DCT1(B[:, m])
+    end
+
+    return B
+
+end
