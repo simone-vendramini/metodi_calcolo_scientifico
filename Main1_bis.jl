@@ -3,6 +3,7 @@ include("MyLib.jl")
 
 using DelimitedFiles
 using Printf
+using Statistics
 
 path = "./data/"
 matrix_names = ["spa1", "spa2", "vem1", "vem2"]
@@ -20,11 +21,65 @@ for name in matrix_names
 
         println(name, " ", tol_str)
         println()
+        
+        times_jacobi = []
+        times_gauss_seidel = []
+        times_gradient = []
+        times_conjugate_gradient = []
+        
+        time_jacobi = @elapsed begin jacobi_result = jacobi(matrix, b, tol) end
+        time_gauss_seidel = @elapsed begin gauss_seidel_result = gauss_seidel(matrix, b, tol) end
+        time_gradient = @elapsed begin gradient_result = gradient(matrix, b, tol) end
+        time_conjugate_gradient = @elapsed begin conjugate_gradient_result = conjugate_gradient(matrix, b, tol) end
+        
+        push!(times_jacobi, time_jacobi)
+        push!(times_gauss_seidel, time_gauss_seidel)
+        push!(times_gradient, time_gradient)
+        push!(times_conjugate_gradient, time_conjugate_gradient)
+        
+        for i =1:9
+            time_jacobi = @elapsed begin jacobi(matrix, b, tol) end
+            time_gauss_seidel = @elapsed begin gauss_seidel(matrix, b, tol) end
+            time_gradient = @elapsed begin gradient(matrix, b, tol) end
+            time_conjugate_gradient = @elapsed begin conjugate_gradient(matrix, b, tol) end
 
-        writedlm("./results/" * name * "_" * tol_str * "_jacobi.txt", jacobi(matrix, b, tol))
-        writedlm("./results/" * name * "_" * tol_str * "_gauss_seidel.txt", gauss_seidel(matrix, b, tol))
-        writedlm("./results/" * name * "_" * tol_str * "_gradient.txt", gradient(matrix, b, tol))
-        writedlm("./results/" * name * "_" * tol_str * "_conjugate_gradient.txt", conjugate_gradient(matrix, b, tol))
+            push!(times_jacobi, time_jacobi)
+            push!(times_gauss_seidel, time_gauss_seidel)
+            push!(times_gradient, time_gradient)
+            push!(times_conjugate_gradient, time_conjugate_gradient)
+            
+        end
+
+        # std time
+        std_jacobi = std(times_jacobi)
+        std_gauss_seidel = std(times_gauss_seidel)
+        std_gradient = std(times_gradient)
+        std_conjugate_gradient = std(times_conjugate_gradient)
+
+        # mean time
+        mean_jacobi = mean(times_jacobi)
+        mean_gauss_seidel = mean(times_gauss_seidel)
+        mean_gradient = mean(times_gradient)
+        mean_conjugate_gradient = mean(times_conjugate_gradient)
+
+        results = Dict(
+            "jacobi" => jacobi_result,
+            "jacobi_mean" => mean_jacobi,
+            "jacobi_std" => std_jacobi,
+            "gauss_seidel" => gauss_seidel_result,
+            "gauss_seidel_mean" => mean_gauss_seidel,
+            "gauss_seidel_std" => std_gauss_seidel,
+            "gradient" => gradient_result,
+            "gradient_mean" => mean_gradient,
+            "gradient_std" => std_gradient,
+            "conjugate_gradient" => conjugate_gradient_result,
+            "conjugate_gradient_mean" => mean_conjugate_gradient,
+            "conjugate_gradient_std" => std_conjugate_gradient
+        )
+
+        open("./results/" * name * "_" * tol_str * "_results.json", "w") do f
+            write(f, JSON.json(results))
+        end
 
         println()
     end
