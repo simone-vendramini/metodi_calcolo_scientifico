@@ -38,7 +38,7 @@ for name in matrix_names
         push!(times_gradient, time_gradient)
         push!(times_conjugate_gradient, time_conjugate_gradient)
         
-        for i =1:9
+        for i = 1:10
             time_jacobi = @elapsed begin jacobi(matrix, b, tol) end
             time_gauss_seidel = @elapsed begin gauss_seidel(matrix, b, tol) end
             time_gradient = @elapsed begin gradient(matrix, b, tol) end
@@ -78,7 +78,7 @@ for name in matrix_names
             "conjugate_gradient_std" => std_conjugate_gradient
         )
 
-        open("./results/" * name * "_" * tol_str * "_results.json", "w") do f
+        open("./results_1bis/" * name * "_" * tol_str * "_results.json", "w") do f
             write(f, JSON.json(results))
         end
 
