@@ -10,19 +10,20 @@ function jacobi(A, b, tol=1e-4, max_iter=20000)
     x = zeros(size(A, 1))                         # x = zeros vector        
     
     P = spdiagm(0 => 1.0 ./ diag(A))              # P = inverse diagonal matrix
-
+    last_iter = 0
     for k = 1:max_iter
 
         r = b - A * x                             # calculate residual
         x = x + P * r                             # update x
 
         if norm(r)/norm(b) < tol                  # check convergence
+            last_iter = k
             break
         end
 
     end
 
-    return x
+    return x, last_iter
 
 end
 
@@ -34,7 +35,7 @@ function gauss_seidel(A, b, tol=1e-4, max_iter=20000)
 
     P = tril(A)                                  # P = lower triangular matrix
     N = P - A                                    # N = negative upper triangular matrix with diagonal zero
-
+    last_iter = 0
     for k = 1:max_iter
 
         r = b - A * x                             # calculate residual
@@ -42,12 +43,13 @@ function gauss_seidel(A, b, tol=1e-4, max_iter=20000)
         x = x + y                                 # update x
 
         if norm(r)/norm(b) < tol                  # check convergence
+            last_iter = k
             break
         end
 
     end
 
-    return x
+    return x, last_iter
 
 end
 
@@ -55,6 +57,7 @@ function gradient(A, b, tol=1e-4, max_iter=20000)
     println("Gradient")
 
     x = zeros(size(A, 1))                         # x = zeros vector
+    last_iter = 0
 
     for k = 1:max_iter
 
@@ -63,12 +66,13 @@ function gradient(A, b, tol=1e-4, max_iter=20000)
         x = x + alpha * r                         # update x
 
         if norm(r)/norm(b) < tol                  # check convergence
+            last_iter = k
             break
         end
 
     end
 
-    return x
+    return x, last_iter
 
 end
 
@@ -78,6 +82,7 @@ function conjugate_gradient(A, b, tol=1e-4, max_iter=20000)
     x = zeros(size(A, 1))                         # x = zeros vector
 
     d = b - A * x                                 # initial search direction
+    last_iter = 0
 
     for k = 1:max_iter
 
@@ -90,12 +95,13 @@ function conjugate_gradient(A, b, tol=1e-4, max_iter=20000)
         d = r_k - beta * d                          # update search direction
 
         if norm(r)/norm(b) < tol                  # check convergence
+            last_iter = k
             break
         end
 
     end
 
-    return x
+    return x, last_iter
 
 end
 
