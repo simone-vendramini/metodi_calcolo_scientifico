@@ -111,3 +111,29 @@ function meg(A, b, typePivot="partial")
     end
 
 end
+
+function split_image_into_blocks(image_path, num_blocks)
+    # Carica l'immagine
+    img = load(image_path)
+    
+    # Ottieni le dimensioni dell'immagine
+    height, width = size(img)
+    
+    # Determina le dimensioni di ciascun blocco
+    block_height = div(height, num_blocks)
+    block_width = div(width, num_blocks)
+    
+    # Prepara un array per contenere i blocchi
+    blocks = []
+
+    # Itera sui blocchi
+    for i in 1:num_blocks
+        for j in 1:num_blocks
+            # Estrai il blocco dall'immagine
+            block = view(img, (i-1)*block_height+1:i*block_height, (j-1)*block_width+1:j*block_width)
+            push!(blocks, block)
+        end
+    end
+    
+    return blocks
+end
