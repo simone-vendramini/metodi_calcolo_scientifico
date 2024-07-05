@@ -112,28 +112,64 @@ function meg(A, b, typePivot="partial")
 
 end
 
-function split_image_into_blocks(image_path, num_blocks)
-    # Carica l'immagine
-    img = load(image_path)
+function split_image_into_blocks(img, f)
     
     # Ottieni le dimensioni dell'immagine
     height, width = size(img)
-    
-    # Determina le dimensioni di ciascun blocco
-    block_height = div(height, num_blocks)
-    block_width = div(width, num_blocks)
+
+    height = Int(floor(height/f)*f)
+    width = Int(floor(width/f)*f)
     
     # Prepara un array per contenere i blocchi
     blocks = []
 
     # Itera sui blocchi
-    for i in 1:num_blocks
-        for j in 1:num_blocks
+    for i in 0:f:width-f
+        for j in 0:f:height-f
             # Estrai il blocco dall'immagine
-            block = view(img, (i-1)*block_height+1:i*block_height, (j-1)*block_width+1:j*block_width)
+            block = view(img, j+1:j+f, i+1:i+f)
             push!(blocks, block)
         end
     end
     
     return blocks
+end
+
+function image_compress(blocks, d)
+    ff_compressed = []
+    for block in blocks
+        block = Float64.(Array(block))
+        cc = FFTW.dct(block)
+
+        for j in 1:size(cc)[1]
+            for k in 1:size(cc)[2]
+                if j + k >= d
+                    cc[j, k] = 0
+                end
+            end
+        end
+
+        ff = FFTW.idct(cc)
+        # ff = round.(ff)
+        ff = clamp.(ff, 0, 1)
+        push!(ff_compressed, ff)
+    end
+
+    return ff_compressed
+end
+
+function reassemble_from_blocks(blocks, image_size, block_size)
+    h = Int(image_size)
+    w = Int(image_size)
+    reassembled_image = zeros(Gray, h, w)
+    block_index = 1
+    for i in 1:block_size:h
+        for j in 1:block_size:w
+            block = blocks[block_index]
+            block_h, block_w = size(block)
+            reassembled_image[j:j+block_h-1, i:i+block_w-1] .= block
+            block_index += 1
+        end
+    end
+    return reassembled_image
 end
