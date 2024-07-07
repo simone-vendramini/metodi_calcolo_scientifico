@@ -158,16 +158,17 @@ function image_compress(blocks, d)
     return ff_compressed
 end
 
-function reassemble_from_blocks(blocks, image_size, block_size)
-    h = Int(image_size)
-    w = Int(image_size)
+function reassemble_from_blocks(blocks, height, width, block_size)
+    h = Int(height)
+    w = Int(width)
     reassembled_image = zeros(Gray, h, w)
     block_index = 1
-    for i in 1:block_size:h
-        for j in 1:block_size:w
+    for j in 1:block_size:w
+        for i in 1:block_size:h
+        
             block = blocks[block_index]
             block_h, block_w = size(block)
-            reassembled_image[j:j+block_h-1, i:i+block_w-1] .= block
+            reassembled_image[i:i+block_h-1, j:j+block_w-1] .= block
             block_index += 1
         end
     end

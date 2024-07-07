@@ -7,14 +7,15 @@ using JSON
 using Images
 using ImageView
 
-image_path = "immagini/20x20.bmp"
+image_path = "immagini/bridge.bmp"
+
 img = load(image_path)
 img = Gray.(img)
 imshow(img)
 println(size(img))
 
 f = 20
-d = 5
+d = 8
 
 blocks = split_image_into_blocks(img, f)
 
@@ -32,8 +33,9 @@ blocks = split_image_into_blocks(img, f)
 ff = image_compress(blocks, d)
 
 height, width = size(img)
-im_size = Int(floor(height/f)*f)
-ff_img = reassemble_from_blocks(ff, im_size, f)
+height = Int(floor(height/f)*f)
+width = Int(floor(width/f)*f)
+ff_img = reassemble_from_blocks(ff, height, width, f)
 ff_img = Gray{N0f8}.(ff_img)
 
 println(size(ff_img))
