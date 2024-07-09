@@ -8,7 +8,7 @@ using JSON
 
 path = "./data/"
 matrix_names = ["spa1", "spa2", "vem1", "vem2"]
-tols = [1e-4, 1e-6, 1e-8, 1e-10]
+tols = [1e+2, 1e-4, 1e-6, 1e-8, 1e-10]
 
 
 for name in matrix_names
