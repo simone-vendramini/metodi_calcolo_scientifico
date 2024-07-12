@@ -49,6 +49,9 @@ callback!(app, Output("output-message", "children"),
     State("input-2", "value")
 ) do n_clicks, contents, f, d
     if n_clicks != nothing && contents != nothing && f != nothing && d != nothing
+        if d < 0 || d > (2*f-2) 
+            return "Valori di taglio non validi. Inserire un valore compreso tra 0 e 2f-2."
+        end
         try
             # Decode and save the uploaded image
             img_data = Base64.base64decode(split(contents, ",")[2])
