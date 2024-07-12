@@ -1,4 +1,5 @@
 using SparseArrays
+using LinearAlgebra
 
 function import_matrix(path)
     open(path) do file
@@ -173,4 +174,47 @@ function reassemble_from_blocks(blocks, height, width, block_size)
         end
     end
     return reassembled_image
+end
+
+function is_symmetric(matrix)
+    
+    if size(matrix, 1) != size(matrix, 2)
+        return false
+    end
+    
+    return matrix == transpose(matrix)
+end
+
+function is_positive_definite(matrix)
+    if size(matrix, 1) != size(matrix, 2)
+        return false
+    end
+    
+    try
+        cholesky(matrix)
+        return true
+    catch e
+        return false
+    end
+end
+
+function is_diagonally_dominant(matrix)
+    n = size(matrix, 1)
+    for i = 1:n
+        if abs(matrix[i, i]) <= sum(abs.(matrix[i, :])) - abs(matrix[i, i])
+            return false
+        end
+    end
+    return true
+end
+
+function condition_number(matrix)
+
+    dense_matrix = Matrix(matrix)
+    
+    singular_values = svdvals(dense_matrix)
+    
+    cond_number = maximum(singular_values) / minimum(singular_values)
+    
+    return cond_number
 end
